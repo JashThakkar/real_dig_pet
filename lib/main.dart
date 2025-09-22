@@ -60,10 +60,9 @@ class _DigitalPetAppState extends State<DigitalPetApp> {
           children: <Widget>[
             ColorFiltered(
               colorFilter: ColorFilter.mode(
-                _moodColor(
-                    _DigitalPetAppState.happinessLevel),
+                _moodColor(_DigitalPetAppState.happinessLevel),
                 BlendMode.modulate,
-              ),
+                ),
               child: Image.asset(
                 'lib/assets/doggy.png',
                 width: 200,
