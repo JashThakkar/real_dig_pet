@@ -81,6 +81,17 @@ class _DigitalPetAppState extends State<DigitalPetApp> {
               onPressed: _feedPet,
               child: Text('Feed Your Pet'),
             ),
+            SizedBox(height: 16.0),
+            TextField(
+              decoration: InputDecoration(
+              labelText: 'New Name',
+              ),
+            ),
+            SizedBox(height: 16.0),
+            ElevatedButton(
+              onPressed: _feedPet,
+              child: Text('Update Name'),
+            ),
           ],
         ),
       ),
