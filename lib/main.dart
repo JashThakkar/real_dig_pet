@@ -12,6 +12,7 @@ class DigitalPetApp extends StatefulWidget {
 }
 
 class _DigitalPetAppState extends State<DigitalPetApp> {
+  final TextEditingController _nameController = TextEditingController();
   String petName = "Your Pet";
   int happinessLevel = 50;
   int hungerLevel = 50;
@@ -83,13 +84,21 @@ class _DigitalPetAppState extends State<DigitalPetApp> {
             ),
             SizedBox(height: 16.0),
             TextField(
+              controller: _nameController,
               decoration: InputDecoration(
-              labelText: 'New Name',
+                labelText: 'New Name',
               ),
             ),
             SizedBox(height: 16.0),
             ElevatedButton(
-              onPressed: _feedPet,
+              onPressed: () {
+                setState(() {
+                  petName = _nameController.text.isEmpty
+                      ? petName
+                      : _nameController.text;
+                  _nameController.clear(); // clears the field after updating
+                });
+              },
               child: Text('Update Name'),
             ),
           ],
