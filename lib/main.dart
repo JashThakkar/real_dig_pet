@@ -58,6 +58,18 @@ class _DigitalPetAppState extends State<DigitalPetApp> {
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: <Widget>[
+            ColorFiltered(
+              colorFilter: ColorFilter.mode(
+                _moodColor(
+                    _DigitalPetAppState.happinessLevel), // Pass the pet's happiness level
+                BlendMode.modulate,
+              ),
+              child: Image.asset(
+                'assets/doggy.png',
+                width: 200,
+                height: 200,
+              ),
+            ),
             Text(
               'Name: $petName',
               style: TextStyle(fontSize: 20.0),
@@ -106,4 +118,14 @@ class _DigitalPetAppState extends State<DigitalPetApp> {
       ),
     );
   }
-}
+
+  
+  Color _moodColor(happinessLevel) {if (happinessLevel > 70) {
+      return Colors.green;
+    } else if (happinessLevel >= 30) {
+      return Colors.yellow;
+    } else {
+      return Colors.red;
+    }}}
+  
+
