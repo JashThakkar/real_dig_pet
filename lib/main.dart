@@ -14,7 +14,7 @@ class DigitalPetApp extends StatefulWidget {
 class _DigitalPetAppState extends State<DigitalPetApp> {
   final TextEditingController _nameController = TextEditingController();
   String petName = "Your Pet";
-  int happinessLevel = 50;
+  static int happinessLevel = 50;
   int hungerLevel = 50;
   void _playWithPet() {
     setState(() {
@@ -61,11 +61,11 @@ class _DigitalPetAppState extends State<DigitalPetApp> {
             ColorFiltered(
               colorFilter: ColorFilter.mode(
                 _moodColor(
-                    _DigitalPetAppState.happinessLevel), // Pass the pet's happiness level
+                    _DigitalPetAppState.happinessLevel),
                 BlendMode.modulate,
               ),
               child: Image.asset(
-                'assets/doggy.png',
+                'lib/assets/doggy.png',
                 width: 200,
                 height: 200,
               ),
