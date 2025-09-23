@@ -23,6 +23,7 @@ class _DigitalPetAppState extends State<DigitalPetApp> {
   Timer? _winTimer;
   bool _hasWon = false;
   bool _hasLost = false;
+  int _energyLevel = 100;
 
   void _checkLoss() {
     if (_hasLost || _hasWon) return;
@@ -100,6 +101,7 @@ class _DigitalPetAppState extends State<DigitalPetApp> {
   void _playWithPet() {
     setState(() {
       happinessLevel += 10;
+      _energyLevel = (_energyLevel - 10).clamp(0, 100);
       _updateHunger();
     });
     _updateWinTimer();
@@ -109,6 +111,7 @@ class _DigitalPetAppState extends State<DigitalPetApp> {
   void _feedPet() {
     setState(() {
       hungerLevel -= 10;
+      _energyLevel = (_energyLevel + 5).clamp(0, 100);
       _updateHappiness();
     });
     _updateWinTimer();
@@ -128,6 +131,7 @@ class _DigitalPetAppState extends State<DigitalPetApp> {
   void _updateHunger() {
     setState(() {
       hungerLevel += 5;
+      _energyLevel = (_energyLevel - 5).clamp(0, 100);
       if (hungerLevel > 100) {
         hungerLevel = 100;
         happinessLevel -= 20;
@@ -209,6 +213,7 @@ class _DigitalPetAppState extends State<DigitalPetApp> {
               },
               child: Text('Update Name'),
             ),
+            _energyBar(),
           ],
         ),
       ),
@@ -234,6 +239,31 @@ class _DigitalPetAppState extends State<DigitalPetApp> {
       return Colors.red;
     }
   }
+
+  Widget _energyBar() {
+  return Column(
+    crossAxisAlignment: CrossAxisAlignment.center,
+    children: [
+      const SizedBox(height: 16),
+      const Text(
+        'Energy',
+        style: TextStyle(fontSize: 18, fontWeight: FontWeight.w600),
+      ),
+      const SizedBox(height: 8),
+      SizedBox(
+        width: 260,
+        child: LinearProgressIndicator(
+          value: _energyLevel / 100.0,
+          minHeight: 12,
+          backgroundColor: Colors.black12,
+          valueColor: AlwaysStoppedAnimation<Color>(Colors.blueAccent),
+        ),
+      ),
+      const SizedBox(height: 8),
+      Text('Energy Level: $_energyLevel'),
+    ],
+  );
+}
 
   Widget _moodShower() {
     final level = happinessLevel;
