@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'dart:async';
 
 void main() {
   runApp(MaterialApp(
@@ -16,6 +17,19 @@ class _DigitalPetAppState extends State<DigitalPetApp> {
   String petName = "Your Pet";
   static int happinessLevel = 50;
   int hungerLevel = 50;
+  Timer? _hungerTimer;
+
+  @override
+  void initState() {
+    super.initState();
+
+    _hungerTimer = Timer.periodic(const Duration(seconds: 30), (timer) {
+      setState(() {
+        hungerLevel += 5;
+      });
+    });
+  }
+
   void _playWithPet() {
     setState(() {
       happinessLevel += 10;
@@ -49,6 +63,12 @@ class _DigitalPetAppState extends State<DigitalPetApp> {
   }
 
   @override
+  void dispose() {
+    _hungerTimer?.cancel();
+    super.dispose();
+  }
+
+  @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
@@ -58,11 +78,13 @@ class _DigitalPetAppState extends State<DigitalPetApp> {
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: <Widget>[
+            const SizedBox(height: 12.0),
+            _moodShower(),
             ColorFiltered(
               colorFilter: ColorFilter.mode(
                 _moodColor(_DigitalPetAppState.happinessLevel),
                 BlendMode.modulate,
-                ),
+              ),
               child: Image.asset(
                 'lib/assets/doggy.png',
                 width: 200,
@@ -107,7 +129,7 @@ class _DigitalPetAppState extends State<DigitalPetApp> {
                   petName = _nameController.text.isEmpty
                       ? petName
                       : _nameController.text;
-                  _nameController.clear(); // clears the field after updating
+                  _nameController.clear();
                 });
               },
               child: Text('Update Name'),
@@ -118,13 +140,44 @@ class _DigitalPetAppState extends State<DigitalPetApp> {
     );
   }
 
-  
-  Color _moodColor(happinessLevel) {if (happinessLevel > 70) {
+  IconData _moodIcon(int level) {
+    if (level > 70) {
+      return Icons.sentiment_very_satisfied;
+    } else if (level >= 30) {
+      return Icons.sentiment_neutral;
+    } else {
+      return Icons.sentiment_very_dissatisfied;
+    }
+  }
+
+  Color _moodColor(happinessLevel) {
+    if (happinessLevel > 70) {
       return Colors.green;
     } else if (happinessLevel >= 30) {
       return Colors.yellow;
     } else {
       return Colors.red;
-    }}}
-  
+    }
+  }
 
+  Widget _moodShower() {
+    final level = happinessLevel;
+    final color = _moodColor(level);
+
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+      decoration: BoxDecoration(
+        color: color.withOpacity(0.15),
+        borderRadius: BorderRadius.circular(12),
+        border: Border.all(color: color.withOpacity(0.4)),
+      ),
+      child: Row(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          Icon(_moodIcon(level), color: color, size: 28),
+          const SizedBox(width: 8),
+        ],
+      ),
+    );
+  }
+}
