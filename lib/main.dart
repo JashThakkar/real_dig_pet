@@ -18,16 +18,83 @@ class _DigitalPetAppState extends State<DigitalPetApp> {
   static int happinessLevel = 50;
   int hungerLevel = 50;
   Timer? _hungerTimer;
+  static const int _winThreshold = 80;
+  static const Duration _winDuration = Duration(seconds: 60);
+  Timer? _winTimer;
+  bool _hasWon = false;
+  bool _hasLost = false;
+
+  void _checkLoss() {
+    if (_hasLost || _hasWon) return;
+
+    if (hungerLevel >= 100 && happinessLevel <= 10) {
+      _hasLost = true;
+
+      _hungerTimer?.cancel();
+      _winTimer?.cancel();
+      _winTimer = null;
+
+      if (mounted) {
+        showDialog(
+          context: context,
+          barrierDismissible: false,
+          builder: (_) => AlertDialog(
+            title: const Text('Game Over 💀'),
+            content: const Text('Your pet got too hungry and too sad.'),
+            actions: [
+              TextButton(
+                onPressed: () {
+                  Navigator.of(context).pop();
+                },
+                child: const Text('Ok'),
+              ),
+            ],
+          ),
+        );
+      }
+    }
+  }
+
+  void _updateWinTimer() {
+    if (_hasWon) return;
+    if (happinessLevel > _winThreshold) {
+      _winTimer ??= Timer(_winDuration, _declareWin);
+    } else {
+      _winTimer?.cancel();
+      _winTimer = null;
+    }
+  }
+
+  void _declareWin() {
+    _hasWon = true;
+    _winTimer?.cancel();
+    _winTimer = null;
+
+    if (mounted) {
+      showDialog(
+        context: context,
+        builder: (_) => AlertDialog(
+          title: const Text('You Win! 🎉'),
+          content: const Text('Your pet stayed happy for 60 seconds!'),
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.of(context).pop(),
+              child: const Text('Awesome'),
+            ),
+          ],
+        ),
+      );
+    }
+  }
 
   @override
   void initState() {
     super.initState();
 
     _hungerTimer = Timer.periodic(const Duration(seconds: 30), (timer) {
-      setState(() {
-        hungerLevel += 5;
-      });
+      _updateHunger();
     });
+    _updateWinTimer();
   }
 
   void _playWithPet() {
@@ -35,6 +102,8 @@ class _DigitalPetAppState extends State<DigitalPetApp> {
       happinessLevel += 10;
       _updateHunger();
     });
+    _updateWinTimer();
+    _checkLoss();
   }
 
   void _feedPet() {
@@ -42,6 +111,8 @@ class _DigitalPetAppState extends State<DigitalPetApp> {
       hungerLevel -= 10;
       _updateHappiness();
     });
+    _updateWinTimer();
+    _checkLoss();
   }
 
   void _updateHappiness() {
@@ -50,6 +121,8 @@ class _DigitalPetAppState extends State<DigitalPetApp> {
     } else {
       happinessLevel += 10;
     }
+    _updateWinTimer();
+    _checkLoss();
   }
 
   void _updateHunger() {
@@ -59,7 +132,9 @@ class _DigitalPetAppState extends State<DigitalPetApp> {
         hungerLevel = 100;
         happinessLevel -= 20;
       }
+      _updateWinTimer();
     });
+    _checkLoss();
   }
 
   @override
